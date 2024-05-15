@@ -1,0 +1,26 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "dependencies": {
+    "@google-cloud/vision": "^3.1.4",
+    "firebase-admin": "^11.11.1",
+    "firebase-functions": "^5.0.1"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.2"
+  },
+  "private": true
+}
