@@ -1,33 +1,37 @@
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
 const vision = require("@google-cloud/vision");
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const { NlpManager } = require('node-nlp');
 
 admin.initializeApp();
-const client = new vision.ImageAnnotatorClient();
 
-exports.analyzeImage = functions.storage.object().onFinalize(async (object) => {
-  const bucket = admin.storage().bucket(object.bucket);
-  const filePath = object.name;
+const referenceProducts = {
+  "Apple": ["Apple normal", "Apple fresh", "Green Apple"],
+  "Orange": ["Orange", "Mandarin", "Tangerine"],
+  "Banana": ["Banana", "Banana ripe", "Plantain"],
+  "Butter": ["Butter", "Margarine"],
+  "Milk": ["Milk", "Soy Milk", "Almond Milk"],
+  "Bread": ["Bread", "Whole Wheat Bread", "White Bread"],
+  "Cheese": ["Cheese", "Cheddar", "Mozzarella"]
+};
 
-  if (!filePath) {
-    console.log("No file path provided.");
-    return null;
+const manager = new NlpManager({ languages: ['en'] });
+
+async function trainAndSaveModel() {
+  // Add named entities for reference products
+  for (const [category, products] of Object.entries(referenceProducts)) {
+    for (const product of products) {
+      manager.addNamedEntityText('product', product, ['en'], [product]);
+    }
   }
+  await manager.train();
+  manager.save();
+}
 
-  const [result] = await client.labelDetection(`gs://${bucket.name}/${filePath}`);
-  const labels = result.labelAnnotations;
-
-  console.log("Labels:");
-  labels.forEach((label) => console.log(label.description));
-
-  // Optionally, you can save the results back to Firestore or Realtime Database
-  // const db = admin.firestore();
-  // await db.collection('images').doc(filePath).set({ labels });
-
-  return null;
-});
+// Ensure the model is trained before handling requests
 
 
+const client = new vision.ImageAnnotatorClient();
 
 exports.analyzeImageHttp = functions.https.onRequest(async (req, res) => {
   try {
@@ -53,3 +57,32 @@ exports.analyzeImageHttp = functions.https.onRequest(async (req, res) => {
     return res.status(500).send("An error occurred during image analysis.");
   }
 });
+
+exports.extractProducts = functions.https.onRequest(async (req, res) => {
+    trainAndSaveModel();
+
+  const text = req.body.text || '';
+
+  // Process the text with NLP.js
+  const response = await manager.process('en', text);
+  const entities = response.entities.filter(entity => entity.entity === 'product');
+
+  // Create a result object to map detected products to reference categories
+  const detectedProducts = {};
+  for (const [category, products] of Object.entries(referenceProducts)) {
+    detectedProducts[category] = [];
+    for (const product of products) {
+      if (entities.some(entity => entity.option === product)) {
+        detectedProducts[category].push(product);
+      }
+    }
+  }
+
+  // Filter out empty lists
+  const filteredProducts = Object.fromEntries(
+    Object.entries(detectedProducts).filter(([key, value]) => value.length > 0)
+  );
+
+  res.json(filteredProducts);
+});
+
