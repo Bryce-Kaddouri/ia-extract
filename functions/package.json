@@ -4,8 +4,10 @@
   "dependencies": {
     "@google-cloud/vision": "^3.1.4",
     "@nlpjs/basic": "^4.27.0",
+    "axios": "^1.6.8",
     "firebase-admin": "^11.11.1",
     "firebase-functions": "^5.0.1",
+    "jimp": "^0.22.12",
     "node-nlp": "^3.10.2"
   },
   "engines": {

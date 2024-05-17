@@ -136,41 +136,6 @@
       "URL"
     ],
     "namedEntities": {
-      "company": {
-        "type": "enum",
-        "name": "company",
-        "localeFallback": {
-          "*": "en"
-        },
-        "locales": {
-          "en": {
-            "Walmart": [
-              "Walmart"
-            ],
-            "Target": [
-              "Target"
-            ],
-            "Costco": [
-              "Costco"
-            ],
-            "Kroger": [
-              "Kroger"
-            ],
-            "Safeway": [
-              "Safeway"
-            ],
-            "Whole Foods": [
-              "Whole Foods"
-            ],
-            "Market Store": [
-              "Market Store"
-            ],
-            "Akash Enterprises": [
-              "Akash Enterprises"
-            ]
-          }
-        }
-      },
       "product": {
         "type": "enum",
         "name": "product",
@@ -239,56 +204,6 @@
             "Mozzarella": [
               "Mozzarella"
             ]
-          }
-        }
-      },
-      "quantity": {
-        "type": "regex",
-        "name": "quantity",
-        "localeFallback": {
-          "*": "en"
-        },
-        "locales": {
-          "en": {
-            "regex": "/\\d+\\s*(KG|LBS)/gi"
-          }
-        }
-      },
-      "price": {
-        "type": "enum",
-        "name": "price",
-        "localeFallback": {
-          "*": "en"
-        },
-        "locales": {
-          "en": {
-            "price": [
-              "price"
-            ]
-          }
-        }
-      },
-      "tax": {
-        "type": "regex",
-        "name": "tax",
-        "localeFallback": {
-          "*": "en"
-        },
-        "locales": {
-          "en": {
-            "regex": "/tax/gi"
-          }
-        }
-      },
-      "amount": {
-        "type": "regex",
-        "name": "amount",
-        "localeFallback": {
-          "*": "en"
-        },
-        "locales": {
-          "en": {
-            "regex": "/\\$\\d+\\.\\d+/gi"
           }
         }
       }
