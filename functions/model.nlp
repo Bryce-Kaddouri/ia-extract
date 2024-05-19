@@ -206,6 +206,54 @@
             ]
           }
         }
+      },
+      "quantity": {
+        "type": "regex",
+        "name": "quantity",
+        "localeFallback": {
+          "*": "en"
+        },
+        "locales": {
+          "en": {
+            "regex": "/\\d+\\s*(KG|LBS)/gi"
+          }
+        }
+      },
+      "price": {
+        "type": "regex",
+        "name": "price",
+        "localeFallback": {
+          "*": "en"
+        },
+        "locales": {
+          "en": {
+            "regex": "/Rs\\s*\\.\\s*\\d+\\.\\d+/gi"
+          }
+        }
+      },
+      "tax": {
+        "type": "regex",
+        "name": "tax",
+        "localeFallback": {
+          "*": "en"
+        },
+        "locales": {
+          "en": {
+            "regex": "/Rs\\s*\\.\\s*\\d+\\.\\d+\\s*\\(\\s*\\d+\\s*%\\s*\\)/gi"
+          }
+        }
+      },
+      "amount": {
+        "type": "regex",
+        "name": "amount",
+        "localeFallback": {
+          "*": "en"
+        },
+        "locales": {
+          "en": {
+            "regex": "/Rs\\s*\\.\\s*\\d+\\.\\d+/gi"
+          }
+        }
       }
     }
   },
