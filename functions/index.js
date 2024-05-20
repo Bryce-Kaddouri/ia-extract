@@ -5,6 +5,10 @@ const { NlpManager } = require('node-nlp');
 const Jimp = require('jimp');
 const axios = require('axios');
 const cors = require('cors')({ origin: true });
+const PDFPoppler = require('pdf-poppler');
+const { v4: uuidv4 } = require('uuid');
+const { join } = require('path');
+const { unlink } = require('fs/promises');
 
 admin.initializeApp();
 
@@ -329,10 +333,14 @@ exports.analyzeImageHttp = functions.https.onRequest(async (req, res) => {
 exports.analyzeImageHttpCustom = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
-      const {imageUrl, headers} = req.body;
+      const {imageUrl, headers, breakWorld} = req.body;
 
       if (!imageUrl) {
         return res.status(400).send("No image URL provided.");
+      }
+
+      if (!breakWorld) {
+        return res.status(400).send("No breakWorld provided.");
       }
 
         if (!headers) {
@@ -344,6 +352,25 @@ exports.analyzeImageHttpCustom = functions.https.onRequest(async (req, res) => {
             return res.status(400).send("Headers should be an array.");
           }
         }
+
+        // check the extension of the image by downloading the image
+
+        // Make a HEAD request to get the content type
+              const headResponse = await axios.head(imageUrl);
+              const contentType = headResponse.headers['content-type'];
+
+        const isPdf = contentType === 'application/pdf';
+        let images = [];
+
+        if(isPdf){
+            console.log("PDF file detected");
+
+            return res.status(400).send("PDF files are not supported.");
+        }else{
+
+
+
+
 
       const [result] = await client.textDetection(imageUrl);
       const detections = result.fullTextAnnotation;
@@ -462,7 +489,13 @@ exports.analyzeImageHttpCustom = functions.https.onRequest(async (req, res) => {
         const wordY = word.boundingBox.vertices[0].y;
         const wordText = word.symbols.map(symbol => symbol.text).join('');
 
-        if (wordText === "Sub" && allWords.some(w => w.symbols.map(s => s.text).join('') === "Total" && Math.abs(w.boundingBox.vertices[0].y - wordY) < rowThreshold)) {
+        /*if (wordText === "Sub" && allWords.some(w => w.symbols.map(s => s.text).join('') === "Total" && Math.abs(w.boundingBox.vertices[0].y - wordY) < rowThreshold)) {
+          stopProcessing = true;
+          return;
+        }*/
+
+        breakWorldList = breakWorld.split(" ");
+        if (breakWorldList.includes(wordText)) {
           stopProcessing = true;
           return;
         }
@@ -558,6 +591,7 @@ exports.analyzeImageHttpCustom = functions.https.onRequest(async (req, res) => {
         image: base64Image,
         data: extractedData
       };
+      }
 
       /*return new Response(
           JSON.stringify(data),
@@ -568,7 +602,9 @@ exports.analyzeImageHttpCustom = functions.https.onRequest(async (req, res) => {
          data: extractedData
        });*/
 
-      return res.send(data);
+
+      return res.send(JSON.stringify(data, null, 2));
+
 
     } catch (error) {
       console.error(error);

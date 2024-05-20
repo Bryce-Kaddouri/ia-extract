@@ -9,7 +9,12 @@
     "firebase-admin": "^11.11.1",
     "firebase-functions": "^5.0.1",
     "jimp": "^0.22.12",
-    "node-nlp": "^3.10.2"
+    "node-nlp": "^3.10.2",
+    "path": "^0.12.7",
+    "pdf-lib": "^1.17.1",
+    "pdf-poppler": "^0.2.1",
+    "pdf2image": "^1.2.3",
+    "uuid": "^9.0.1"
   },
   "engines": {
     "node": "14"
